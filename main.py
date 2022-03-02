@@ -22,30 +22,31 @@ LED_INDEXES = [[0],[1,2,3],[4],[5,6,7],[8],[9,10,11]]
 
 sensitivity = 1
 
-sensorPile = deque([0]*5,maxlen=100)
-eventsPile = deque([0]*5,maxlen=10000)
+sensorPile = deque([], maxlen=5)
+eventsPile = deque([], maxlen=5)
 
 ADC = ADS1256()
 ADC.ADS1256_init()
 
 def getSensorData():
-    time.sleep(1)
+    time.sleep(0.03)
 
     class ReadADC:
-        ADCValue = ADC.ADS1256_GetAll()
+        ADCValue = np.array(ADC.ADS1256_GetAll())*5.0/0x7fffff
     return ReadADC
 
 def sensorThread():
     global connected
     while connected:
-        sensorPile.append(np.array(getSensorData()))
+#        print(f"SensorPile: {sensorPile}")
+        sensorPile.append(getSensorData().ADCValue)
 
 
 def calculateEvents():
-    time.sleep(1)
+    time.sleep(0.03)
 
     class calcEvents:
-        d = sensorPile[4] - sensorPile[0]
+        d = sensorPile[0] - sensorPile[4]
         flags = (d > sensitivity)
     return calcEvents
 
@@ -53,18 +54,20 @@ def calculateEvents():
 def flagThread():
     global connected
     while connected:
-        eventsPile.append(calculateEvents())
+        eventsPile.append(calculateEvents().flags)
+        print(f"eventsPile: {eventsPile[0]}")
 
 def actions():
     events = eventsPile.pop()
-    print ("0 ADC = %ld"%(events[0]))
-    print ("1 ADC = %ld"%(events[1]))
-    print ("2 ADC = %ld"%(events[2]))
-    print ("3 ADC = %ld"%(events[3]))
-    print ("4 ADC = %ld"%(events[4]))
-    print ("5 ADC = %ld"%(events[5]))
-    print ("6 ADC = %ld"%(events[6]))
-    print ("7 ADC = %ld"%(events[7]))
+    print(eventsPile)
+    print ("0 ADC = %lf"%(events[0]))
+    print ("1 ADC = %lf"%(events[1]))
+    print ("2 ADC = %lf"%(events[2]))
+    print ("3 ADC = %lf"%(events[3]))
+    print ("4 ADC = %lf"%(events[4]))
+    print ("5 ADC = %lf"%(events[5]))
+    print ("6 ADC = %lf"%(events[6]))
+    print ("7 ADC = %lf"%(events[7]))
     print ("\33[9A")
 
 def setElemColor(element, color):
@@ -95,18 +98,13 @@ if __name__ == '__main__':
 
         first_thread = threading.Thread(target=sensorThread)
         second_thread = threading.Thread(target=flagThread)
-        save_thread = threading.Thread(target=flagThread)
+        output_thread = threading.Thread(target=actions)
         first_thread.start()
-        second_thread.start()
-        save_thread.start()
 
         time.sleep(1)
-
-        connected = False
-
-        save_thread.join()
-        first_thread.join()
-        second_thread.join()
+        second_thread.start()
+        time.sleep(1)
+        output_thread.start()
 
 #    try:
 #        while True:
@@ -114,5 +112,9 @@ if __name__ == '__main__':
         
 
     except KeyboardInterrupt:
+        connected = False
+        output_thread.join()
+        first_thread.join()
+        second_thread.join()
 #        colorWipe(strip, Color(0, 0, 0), 10)
         GPIO.cleanup()
