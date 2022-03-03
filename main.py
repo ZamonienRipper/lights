@@ -19,6 +19,9 @@ LED_BRIGHTNESS = 255  # Set to 0 for darkest and 255 for brightest
 LED_INVERT = False    # True to invert the signal (when using NPN transistor level shift)
 LED_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 LED_INDEXES = [[0],[1,2,3],[4],[5,6,7],[8],[9,10,11]]
+LED_INDEXES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+wait_ms = 50
+INPUT_CHANNELS = 3
 
 sensitivity = 1
 
@@ -46,8 +49,8 @@ def calculateEvents():
     time.sleep(0.03)
 
     class calcEvents:
-        d = sensorPile[0] - sensorPile[4]
-        flags = (d > sensitivity)
+        d = sensorPile[0] - sensorPile[-1]
+        flags = np.array((d > sensitivity))
     return calcEvents
 
 
@@ -55,20 +58,40 @@ def flagThread():
     global connected
     while connected:
         eventsPile.append(calculateEvents().flags)
-        print(f"eventsPile: {eventsPile[0]}")
+        print(f"eventsPile: {eventsPile[0][-2:]}")
 
-def actions():
-    events = eventsPile.pop()
-    print(eventsPile)
-    print ("0 ADC = %lf"%(events[0]))
-    print ("1 ADC = %lf"%(events[1]))
-    print ("2 ADC = %lf"%(events[2]))
-    print ("3 ADC = %lf"%(events[3]))
-    print ("4 ADC = %lf"%(events[4]))
-    print ("5 ADC = %lf"%(events[5]))
-    print ("6 ADC = %lf"%(events[6]))
-    print ("7 ADC = %lf"%(events[7]))
-    print ("\33[9A")
+def action_lights():
+    time.sleep(0.1)
+    cooldown = 15
+    previousState = np.zeros(INPUT_CHANNELS)
+    countdown = np.zeros(INPUT_CHANNELS)
+
+    while connected:
+
+        currentState = eventsPile[-1]
+        stateChange = (-previousState) * currentState
+
+        for i, state in enumerate(stateChange):
+            if state == 0:
+                if countdown[i] > 1:
+                    countdown[i] -= 1
+                elif countdown[i] == 1:
+                    setElemColor(i, (0, 0, 0))
+            elif state > 0:
+                setElemColor(i, (0, 255, 0))
+            else:
+                countdown[i] = cooldown
+
+        print(eventsPile)
+        print ("0 ADC = %lf" % (currentState[0]))
+        print ("1 ADC = %lf" % (currentState[1]))
+        print ("2 ADC = %lf" % (currentState[2]))
+        print ("3 ADC = %lf" % (currentState[3]))
+        print ("4 ADC = %lf" % (currentState[4]))
+        print ("5 ADC = %lf" % (currentState[5]))
+        print ("6 ADC = %lf" % (currentState[6]))
+        print ("7 ADC = %lf" % (currentState[7]))
+        print ("\33[9A")
 
 def setElemColor(element, color):
 	for i in LED_INDEXES[element]:
@@ -76,16 +99,14 @@ def setElemColor(element, color):
 	strip.show()
 	time.sleep(wait_ms / 1000.0)
 
+
+
 # Main program logic follows:
-#if __name__ == '__main__':
-
-    # Create NeoPixel object with appropriate configuration.
-#    strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-    # Intialize the library (must be called once before other functions).
-#    strip.begin()
-
 if __name__ == '__main__':
-
+    # Create NeoPixel object with appropriate configuration.
+    strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+    # Intialize the library (must be called once before other functions).
+    strip.begin()
     try:
 
 
