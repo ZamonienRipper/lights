@@ -41,7 +41,7 @@ def getSensorData():
 def sensorThread():
     global connected
     while connected:
-#        print(f"SensorPile: {sensorPile}")
+        print(f"SensorPile: {sensorPile}")
         sensorPile.append(getSensorData().ADCValue)
 
 
@@ -61,6 +61,19 @@ def flagThread():
         print(f"eventsPile: {eventsPile[0][-2:]}")
 
 def action_lights():
+
+    def setElemColor(element, color):
+        for i in LED_INDEXES[element]:
+            strip.setPixelColor(i, color)
+        strip.show()
+        time.sleep(wait_ms / 1000.0)
+
+    # Create NeoPixel object with appropriate configuration.
+    strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+    # Intialize the library (must be called once before other functions).
+    strip.begin()
+
+
     time.sleep(0.1)
     cooldown = 15
     previousState = np.zeros(INPUT_CHANNELS)
@@ -83,7 +96,7 @@ def action_lights():
                 countdown[i] = cooldown
 
         print(eventsPile)
-        print ("0 ADC = %lf" % (currentState[0]))
+"""        print ("0 ADC = %lf" % (currentState[0]))
         print ("1 ADC = %lf" % (currentState[1]))
         print ("2 ADC = %lf" % (currentState[2]))
         print ("3 ADC = %lf" % (currentState[3]))
@@ -91,24 +104,13 @@ def action_lights():
         print ("5 ADC = %lf" % (currentState[5]))
         print ("6 ADC = %lf" % (currentState[6]))
         print ("7 ADC = %lf" % (currentState[7]))
-        print ("\33[9A")
-
-def setElemColor(element, color):
-	for i in LED_INDEXES[element]:
-		strip.setPixelColor(i, color)
-	strip.show()
-	time.sleep(wait_ms / 1000.0)
+        print ("\33[9A")"""
 
 
 
 # Main program logic follows:
 if __name__ == '__main__':
-    # Create NeoPixel object with appropriate configuration.
-    strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-    # Intialize the library (must be called once before other functions).
-    strip.begin()
     try:
-
 
         global connected
         global results
@@ -119,7 +121,7 @@ if __name__ == '__main__':
 
         first_thread = threading.Thread(target=sensorThread)
         second_thread = threading.Thread(target=flagThread)
-        output_thread = threading.Thread(target=actions)
+        output_thread = threading.Thread(target=action_lights)
         first_thread.start()
 
         time.sleep(1)
