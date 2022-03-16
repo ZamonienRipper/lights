@@ -1,5 +1,5 @@
 # /*****************************************************************************
-# * | File        :       EPD_1in54.py
+# * | File        :
 # * | Author      :   Waveshare team
 # * | Function    :   Hardware underlying interface
 # * | Info        :
@@ -27,7 +27,6 @@
 # THE SOFTWARE.
 #
 
-
 import spidev
 import RPi.GPIO as GPIO
 import time
@@ -54,7 +53,6 @@ def spi_writebyte(data):
 
 def spi_readbytes(reg):
     return SPI.readbytes(reg)
-
 
 def module_init():
     GPIO.setmode(GPIO.BCM)
@@ -269,4 +267,11 @@ class ADS1256:
         for i in range(0,8,1):
             ADC_Value[i] = self.ADS1256_GetChannalValue(i)
         return ADC_Value
+
+    def ADS1256_GetHex(self):
+        ADC_Value = [0,0,0,0,0,0]
+        for i in range(2,8,1):
+            ADC_Value[i] = self.ADS1256_GetChannalValue(i)
+        return ADC_Value
+
 ### END OF FILE ###
