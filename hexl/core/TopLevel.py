@@ -2,7 +2,6 @@
 import time
 import RPi.GPIO as GPIO
 import threading
-from kivy.app import App
 from collections import deque
 from rpi_ws281x import Color
 from hexl.core.LightController import LightController
@@ -17,7 +16,7 @@ def detectionThread(dataFreq, detector, eventPile):
         print(f"SensorPile: {eventPile[-1]}")
 
 
-class Menu(App):
+class Menu():
 
     def __init__(self):
 
