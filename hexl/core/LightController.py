@@ -15,8 +15,9 @@ LED_INDEXES = [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11]]
 wait_ms = 50
 
 class LightController:
-    strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-    strip.begin()
+    def __init__(self):
+        self.strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+        self.strip.begin()
 
     def pixelChange(self, pixel, color):
         for led in LED_INDEXES[pixel]:

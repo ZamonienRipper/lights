@@ -2,22 +2,30 @@ import time
 import numpy as np
 from rpi_ws281x import Color
 
-import collections
-eventPile = collections.deque()
-from hexl.core.LightController import LightController
+#import collections
+#eventPile = collections.deque()
+#from hexl.core.LightController import LightController
 
-class ActionLights(eventPile, LightController):
-
-    INPUT_CHANNELS = 6
-    COOLDOWN = 15
-    previousState = np.zeros(INPUT_CHANNELS, dtype=np.int8)
-    countdown = np.zeros(2, dtype=np.uint8)
-
-    def play(self):
+class ActionLights:
+    def __init__(self):
+        self.INPUT_CHANNELS = 6
+        self.COOLDOWN = 15
+        self.previousState = np.zeros(self.INPUT_CHANNELS, dtype=np.int8)
+        self.countdown = np.zeros(self.INPUT_CHANNELS, dtype=np.uint8)
+        
+    def play(self, gameFreq, LightController, eventPile):
+        def decrement(array):
+            result = np.array(np.sqrt((array-1)*array),dtype=np.uint8)
+            return result
+        
+        #print('ENTERING GAME')
         while True:
-            time.sleep(0.25)
+            time.sleep(gameFreq)
+            #print('RUNNING ANOTHER ROUND OF THE GAME')
+            #print(f"eventpile length inside play: {len(eventPile)}")
             if len(eventPile) > 0:
-                newEvent = eventPile.pop()
+                #print(f"eventPile inside play: {eventPile}")
+                newEvent = eventPile.popleft()
                 changes = np.where(newEvent == 1)[0]
                 for channel in changes:
                     self.countdown[channel] = self.COOLDOWN
@@ -31,8 +39,4 @@ class ActionLights(eventPile, LightController):
                         LightController.pixelChange(channel, Color(150, 200, 0))
                     elif state == 1:
                         LightController.pixelOff(channel)
-
-                countdown -= 1
-
-
-
+            self.countdown = decrement(self.countdown)

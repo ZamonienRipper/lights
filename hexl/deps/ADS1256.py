@@ -271,7 +271,7 @@ class ADS1256:
     def ADS1256_GetHex(self):
         ADC_Value = [0,0,0,0,0,0]
         for i in range(2,8,1):
-            ADC_Value[i] = self.ADS1256_GetChannalValue(i)
+            ADC_Value[i-2] = self.ADS1256_GetChannalValue(i)
         return ADC_Value
 
 ### END OF FILE ###
