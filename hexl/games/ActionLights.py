@@ -32,11 +32,11 @@ class ActionLights:
             for channel, state in enumerate(self.countdown):
                 if state > 0:
                     if state == 15:
-                        LightController.pixelChange(channel, Color(255, 0, 0))
+                        LightController.pixelChange(channel, (255, 0, 0))
                     elif state == 10:
-                        LightController.pixelChange(channel, Color(255, 100, 0))
+                        LightController.pixelChange(channel, (255, 100, 0))
                     elif state == 6:
-                        LightController.pixelChange(channel, Color(150, 200, 0))
+                        LightController.pixelChange(channel, (150, 200, 0))
                     elif state == 1:
                         LightController.pixelOff(channel)
             self.countdown = decrement(self.countdown)

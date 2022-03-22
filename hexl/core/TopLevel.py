@@ -30,7 +30,7 @@ class Hexl():
         np.set_printoptions(linewidth=200)
             
         self.dataFreq = 0.03
-        self.gameFreq = 0.1
+        self.gameFreq = 0.3
         self.eventPile = deque([], maxlen=5)
         self.noGameRunning = True
         self.lights = LightController()
@@ -39,17 +39,18 @@ class Hexl():
         self.detection_thread = thread_with_exception(target=detectionThread, args=(self.dataFreq, self.detector, self.eventPile))
         
     def selectMode(self):
-        gameWheel = ((255, 215), (230, 230, 250), (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0))
+        gameWheel = ((255, 215, 0), (230, 230, 250), (255, 215, 0), (230, 230, 250), (255, 215, 0), (230, 230, 250))
         self.eventPile.clear()
         self.lights.pixelsChange([0, 1, 2, 3, 4, 5], gameWheel)
         while True:
             if self.eventPile:
                 nextGame = np.where(self.eventPile.popleft() == 1)[0][0]
                 self.lights.pixelOff(nextGame)
+                print("New mode: {nextGame} selected")
                 return nextGame
             else:
                 time.sleep(self.gameFreq)
-
+            print(self.eventPile)
 
     def run(self):
         try:
@@ -62,21 +63,28 @@ class Hexl():
                     nextGame = self.selectMode()
                     if nextGame == 0:
                         self.game = ActionLights()
+                        print("Next game is ActionsLights")
                     elif nextGame == 1:
                         self.game = Memory()
+                        print("Next game is Memory")
                     elif nextGame == 2:
                         self.game = ActionLights()
+                        print("Next game is ActionsLights")
                     elif nextGame == 3:
                         self.game = Memory()
+                        print("Next game is Memory")
                     elif nextGame == 4:
                         self.game = ActionLights()
+                        print("Next game is ActionsLights")
                     elif nextGame == 5:
                         self.game = Memory()
+                        print("Next game is Memory")
                         
                     self.game_thread = thread_with_exception(
                         target=gameThread, args=(
                             self.game, self.gameFreq, self.lights, self.eventPile))
 
+                    self.lights.colorWipe((0,0,0))
                     self.game_thread.start()
                     self.noGameRunning = False
                     time.sleep(2)
@@ -96,6 +104,6 @@ class Hexl():
             self.detection_thread.join()
             self.game_thread.raise_exception()
             self.game_thread.join()
-            self.lights.colorWipe(Color(0, 0, 0), 50)
+            self.lights.colorWipe((0, 0, 0))
             GPIO.cleanup()
             print("Everything is clean and wiped now. Goodbye")
