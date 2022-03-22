@@ -15,13 +15,22 @@ LED_INDEXES = [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11]]
 wait_ms = 50
 
 class LightController:
+    def col(self, color):
+        return Color(color[0], color[1], color[2])
+
     def __init__(self):
         self.strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
         self.strip.begin()
 
     def pixelChange(self, pixel, color):
         for led in LED_INDEXES[pixel]:
-            self.strip.setPixelColor(led, color)
+            self.strip.setPixelColor(led, self.col(color))
+        self.strip.show()
+
+    def pixelsChange(self, pixels, colors):
+        for i, pixel in enumerate(pixels):
+            for led in LED_INDEXES[pixel]:
+                self.strip.setPixelColor(led, self.col(colors[i]))
         self.strip.show()
 
     def pixelOff(self, pixel):
@@ -32,6 +41,17 @@ class LightController:
     def colorWipe(self, color, wait_ms=50):
         """Wipe color across display a pixel at a time."""
         for i in range(self.strip.numPixels()):
-            self.strip.setPixelColor(i, color)
+            self.strip.setPixelColor(i, self.col(color))
             self.strip.show()
             time.sleep(wait_ms / 1000.0)
+
+    def celebrate(self):
+        celebrationColors = ((0,255,0),(0,0,255),(0,255,0),(0,0,255),(0,255,0),(0,0,255),(0,0,0))
+        for color in celebrationColors:
+            self.colorWipe(color)
+
+    def death(self):
+        deathColors = ((255,0,0),(0,0,0),(255,0,0),(0,0,0),(255,0,0),(0,0,0),(255,0,0),(0,0,0))
+        for color in deathColors:
+            self.colorWipe(color)
+

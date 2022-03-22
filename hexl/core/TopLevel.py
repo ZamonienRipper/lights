@@ -6,6 +6,7 @@ from rpi_ws281x import Color
 from hexl.core.LightController import LightController
 from hexl.core.StepUpDetector import StepUpDetector
 from hexl.games.ActionLights import ActionLights
+from hexl.games.Memory import Memory
 from hexl.core.ThreadWithException import thread_with_exception
 import numpy as np
 
@@ -37,6 +38,18 @@ class Hexl():
 
         self.detection_thread = thread_with_exception(target=detectionThread, args=(self.dataFreq, self.detector, self.eventPile))
         
+    def selectMode(self):
+        gameWheel = ((255, 215), (230, 230, 250), (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0))
+        self.eventPile.clear()
+        self.lights.pixelsChange([0, 1, 2, 3, 4, 5], gameWheel)
+        while True:
+            if self.eventPile:
+                nextGame = np.where(self.eventPile.popleft() == 1)[0][0]
+                self.lights.pixelOff(nextGame)
+                return nextGame
+            else:
+                time.sleep(self.gameFreq)
+
 
     def run(self):
         try:
@@ -46,19 +59,32 @@ class Hexl():
             while True:
                 
                 if self.noGameRunning:
-                    print('select game')
-                    nextGame = 0
+                    nextGame = self.selectMode()
                     if nextGame == 0:
                         self.game = ActionLights()
                     elif nextGame == 1:
+                        self.game = Memory()
+                    elif nextGame == 2:
                         self.game = ActionLights()
+                    elif nextGame == 3:
+                        self.game = Memory()
+                    elif nextGame == 4:
+                        self.game = ActionLights()
+                    elif nextGame == 5:
+                        self.game = Memory()
                         
-                    self.game_thread = thread_with_exception(target=gameThread, args = (self.game, self.gameFreq, self.lights, self.eventPile))
+                    self.game_thread = thread_with_exception(
+                        target=gameThread, args=(
+                            self.game, self.gameFreq, self.lights, self.eventPile))
+
                     self.game_thread.start()
                     self.noGameRunning = False
-                else:
                     time.sleep(2)
-            
+                else:
+                    if self.game_thread.is_alive():
+                        time.sleep(2)
+                    else:
+                        self.noGameRunning = True
         
         except KeyboardInterrupt:
             print("Keyboard Interrupt called")
