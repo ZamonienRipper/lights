@@ -1,10 +1,5 @@
 import time
 import numpy as np
-from rpi_ws281x import Color
-
-#import collections
-#eventPile = collections.deque()
-#from hexl.core.LightController import LightController
 
 class ActionLights:
     def __init__(self):

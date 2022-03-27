@@ -12,6 +12,8 @@ LED_INVERT = False    # True to invert the signal (when using NPN transistor lev
 LED_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 LED_INDEXES = [[0], [1, 2, 3], [4], [5, 6, 7], [8], [9, 10, 11]]
 LED_INDEXES = [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11]]
+LED_INDEXES_OUTER = [0, 1, 2, 3, 4, 5]
+LED_INDEXES_INNER = [6, 7, 8, 9, 10, 11]
 wait_ms = 50
 
 class LightController:
@@ -21,9 +23,16 @@ class LightController:
         #print(f"color2: {color[2]}")
         return Color(color[0], color[1], color[2])
 
+    def pixelList(self, band):
+        targets = self.bandsDict[band]
+        pixels = LED_INDEXES[targets[0]:targets[-1]]
+        pixelList = [item for sublist in pixels for item in sublist]
+
     def __init__(self):
         self.strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
         self.strip.begin()
+        self.bandsDict = {'outer': LED_INDEXES_OUTER, 'inner': LED_INDEXES_INNER}
+        self.pixelsDict = {'outer': self.pixelList('outer'), 'inner': self.pixelList('inner')}
 
     def pixelChange(self, pixel, color):
         for led in LED_INDEXES[pixel]:
@@ -38,10 +47,27 @@ class LightController:
                 self.strip.setPixelColor(led, self.col(colors[i]))
         self.strip.show()
 
-    def pixelOff(self, pixel):
+    def bandChange(self, band, pixels, colors, wipeFirst=True):
+        targets = self.bandsDict[band]
+        if wipeFirst:
+            self.bandOff(band, active=False)
+        for i, pixel in enumerate(pixels):
+            for led in LED_INDEXES[targets[pixel]]:
+                self.strip.setPixelColor(led, self.col(colors[i]))
+        self.strip.show()
+
+    def pixelOff(self, pixel, active=True):
         for led in LED_INDEXES[pixel]:
             self.strip.setPixelColor(led, Color(0, 0, 0))
-        self.strip.show()
+        if active:
+            self.strip.show()
+
+    def bandOff(self, band, active=True):
+        targets = self.pixelsDict[band]
+        for led in targets:
+            self.strip.setPixelColor(led, Color(0, 0, 0))
+        if active:
+            self.strip.show()
 
     def colorWipe(self, color, wait_ms=50):
         """Wipe color across display a pixel at a time."""
