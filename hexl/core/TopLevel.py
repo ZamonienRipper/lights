@@ -7,6 +7,7 @@ from hexl.core.LightController import LightController
 from hexl.core.StepUpDetector import StepUpDetector
 from hexl.games.ActionLights import ActionLights
 from hexl.games.Memory import Memory
+from hexl.games.HexClock import HexClock
 from hexl.core.ThreadWithException import thread_with_exception
 import numpy as np
 
@@ -39,7 +40,7 @@ class Hexl():
         self.detection_thread = thread_with_exception(target=detectionThread, args=(self.dataFreq, self.detector, self.eventPile))
         
     def selectMode(self):
-        gameWheel = ((255, 215, 0), (230, 230, 250), (255, 215, 0), (230, 230, 250), (255, 215, 0), (230, 230, 250))
+        gameWheel = ((255, 215, 0), (230, 230, 250), (150, 150, 150), (230, 230, 250), (255, 215, 0), (230, 230, 250))
         self.eventPile.clear()
         self.lights.pixelsChange([0, 1, 2, 3, 4, 5], gameWheel)
         while True:
@@ -68,8 +69,8 @@ class Hexl():
                         self.game = Memory()
                         print("Next game is Memory")
                     elif nextGame == 2:
-                        self.game = ActionLights()
-                        print("Next game is ActionsLights")
+                        self.game = HexClock()
+                        print("Next game is HexClock")
                     elif nextGame == 3:
                         self.game = Memory()
                         print("Next game is Memory")
