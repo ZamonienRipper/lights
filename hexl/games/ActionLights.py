@@ -1,5 +1,6 @@
 import time
 import numpy as np
+from collections import deque
 
 class ActionLights:
     def __init__(self):
@@ -12,7 +13,9 @@ class ActionLights:
         def decrement(array):
             result = np.array(np.sqrt((array-1)*array),dtype=np.uint8)
             return result
-        
+        history = deque([0,0, self.INPUT_CHANNELS], maxlen=3)
+        print("Welcome to Action Lights")
+        print("Select same input three times in a row to exit")
         #print('ENTERING GAME')
         while True:
             time.sleep(gameFreq)
@@ -22,6 +25,7 @@ class ActionLights:
                 #print(f"eventPile inside play: {eventPile}")
                 newEvent = eventPile.popleft()
                 changes = np.where(newEvent == 1)[0]
+                history.append(changes[0])
                 for channel in changes:
                     self.countdown[channel] = self.COOLDOWN
             for channel, state in enumerate(self.countdown):
@@ -34,4 +38,7 @@ class ActionLights:
                         LightController.pixelChange(channel, (150, 200, 0))
                     elif state == 1:
                         LightController.pixelOff(channel)
+            if history[0] == history[1] & history[1] == history[2]:
+                print("Exiting game")
+                break
             self.countdown = decrement(self.countdown)

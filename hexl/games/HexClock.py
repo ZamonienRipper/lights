@@ -8,7 +8,8 @@ class HexClock:
 
     def play(self, gameFreq, LightController, eventPile):
         minuteColor = (255,255,255)
-        hourColor = (255,255,255)
+        hourColor = (0,0,255)
+        eventPile.clear()
 
         while True:
             now = datetime.datetime.now()
@@ -23,4 +24,8 @@ class HexClock:
             LightController.bandChange('outer', minuteLEDs, [minuteColor]*len(minuteLEDs))
 
             time.sleep(5)
+            
+            if eventPile:
+                LightController.colorWipe((0,0,0))
+                break
 

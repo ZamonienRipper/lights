@@ -47,7 +47,15 @@ class Hexl():
             if self.eventPile:
                 nextGame = np.where(self.eventPile.popleft() == 1)[0][0]
                 self.lights.pixelOff(nextGame)
-                print("New mode: {nextGame} selected")
+                time.sleep(0.7)
+                self.lights.pixelChange(nextGame, gameWheel[nextGame])
+                time.sleep(0.7)
+                self.lights.pixelOff(nextGame)
+                time.sleep(0.7)
+                self.lights.pixelChange(nextGame, gameWheel[nextGame])
+                time.sleep(0.7)
+                self.lights.pixelOff(nextGame)
+                print(f"New mode: {nextGame} selected")
                 return nextGame
             else:
                 time.sleep(self.gameFreq)
@@ -64,22 +72,22 @@ class Hexl():
                     nextGame = self.selectMode()
                     if nextGame == 0:
                         self.game = ActionLights()
-                        print("Next game is ActionsLights")
+                        print("Next game is 0: ActionLights")
                     elif nextGame == 1:
                         self.game = Memory()
-                        print("Next game is Memory")
+                        print("Next game is 1: Memory")
                     elif nextGame == 2:
                         self.game = HexClock()
-                        print("Next game is HexClock")
+                        print("Next game is 2: HexClock")
                     elif nextGame == 3:
                         self.game = Memory()
-                        print("Next game is Memory")
+                        print("Next game is 3: Memory")
                     elif nextGame == 4:
                         self.game = ActionLights()
-                        print("Next game is ActionsLights")
+                        print("Next game is 4: ActionsLights")
                     elif nextGame == 5:
-                        self.game = Memory()
-                        print("Next game is Memory")
+                        self.game = HexClock()
+                        print("Next game is 5: HexClock")
                         
                     self.game_thread = thread_with_exception(
                         target=gameThread, args=(

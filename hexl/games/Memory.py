@@ -3,14 +3,14 @@ import numpy as np
 
 class Memory:
     def __init__(self):
-        self.INPUT_CHANNELS = 6
+        self.INPUT_CHANNELS = 3
         self.TIMEOUT = 5
         self.LIVES = 3
         self.LEVEL = 1
         self.VAL_ON = 1.2
         self.VAL_OFF = .5
         self.LINGER = .75
-        self.WAIT = 1.5
+        self.WAIT = 0.75
 
     def generateSequence(self):
         self.sequence = np.random.randint(0, self.INPUT_CHANNELS, self.LEVEL)
