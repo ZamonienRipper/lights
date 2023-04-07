@@ -8,8 +8,10 @@ from hexl.core.StepUpDetector import StepUpDetector
 from hexl.games.ActionLights import ActionLights
 from hexl.games.Memory import Memory
 from hexl.games.HexClock import HexClock
+from hexl.games.DebugMode import DebugMode
 from hexl.core.ThreadWithException import thread_with_exception
 import numpy as np
+debugFlag = 0
 
 def detectionThread(dataFreq, detector, eventPile):
     global connected
@@ -40,11 +42,15 @@ class Hexl():
         self.detection_thread = thread_with_exception(target=detectionThread, args=(self.dataFreq, self.detector, self.eventPile))
         
     def selectMode(self):
-        gameWheel = ((255, 215, 0), (230, 230, 250), (150, 150, 150), (230, 230, 250), (255, 215, 0), (230, 230, 250))
+        gameWheel = ((255, 255, 0), (100, 100, 100), (255, 0, 255), (100, 100, 100), (0, 255, 255), (100, 100, 100))
+        #gameWheel = ((255, 0, 0), (255, 0, 0),(255, 0, 0),(255, 0, 0),(255, 0, 0),(255, 0, 0))
+        #gameWheel = ((0, 0, 255), (0, 0, 255),(0, 0, 255),(0, 0, 255),(0, 0, 255),(0, 0, 255)) 
+        #gameWheel = ((0, 255, 0), (0, 255, 0), (0, 255, 0), (0, 255, 0), (0, 255, 0), (0, 255, 0))
         self.eventPile.clear()
-        self.lights.pixelsChange([0, 1, 2, 3, 4, 5], gameWheel)
+        self.lights.pixelsChange([6, 7, 8, 9, 10, 11], gameWheel)
         while True:
             if self.eventPile:
+                print(f'eventPile: {self.eventPile}')
                 nextGame = np.where(self.eventPile.popleft() == 1)[0][0]
                 self.lights.pixelOff(nextGame)
                 time.sleep(0.7)
@@ -88,12 +94,15 @@ class Hexl():
                     elif nextGame == 5:
                         self.game = HexClock()
                         print("Next game is 5: HexClock")
+                    if debugFlag:
+                        self.game = DebugMode()
+                        print("Entering debug mode")
                         
                     self.game_thread = thread_with_exception(
                         target=gameThread, args=(
                             self.game, self.gameFreq, self.lights, self.eventPile))
 
-                    self.lights.colorWipe((0,0,0))
+                    self.lights.offWipeFast()
                     self.game_thread.start()
                     self.noGameRunning = False
                     time.sleep(2)
@@ -113,6 +122,6 @@ class Hexl():
             self.detection_thread.join()
             self.game_thread.raise_exception()
             self.game_thread.join()
-            self.lights.colorWipe((0, 0, 0))
+            self.lights.offWipeFast()
             GPIO.cleanup()
             print("Everything is clean and wiped now. Goodbye")

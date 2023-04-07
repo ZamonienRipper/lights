@@ -1,10 +1,17 @@
 import numpy as np
 
+#>>> import RPi.GPIO as GPIO
+#>>> GPIO.setmode(GPIO.BCM)
+#>>> GPIO.setup(26,GPIO.OUT)
+#>>> GPIO.output(26,1)
+#>>> GPIO.output(26,0)
+
+
 import collections
 #eventPile = collections.deque()
 from hexl.deps.ADS1256 import ADS1256
 
-class StepUpDetector:        
+class DarkDetector:        
 
     def updateSensorData(self):
         self.ADCValues = np.array(self.ADC.ADS1256_GetHex()) * 5.0 / 0x7fffff
@@ -14,7 +21,7 @@ class StepUpDetector:
     def __init__(self):
         #self.eventPile = eventPile
         self.dataPileSize = 6
-        self.sensitivity = 1
+        self.sensitivity = -1
         self.dataPile = collections.deque([], maxlen=self.dataPileSize)
 
         self.ADC = ADS1256()

@@ -24,7 +24,7 @@ class ActionLights:
             if len(eventPile) > 0:
                 #print(f"eventPile inside play: {eventPile}")
                 newEvent = eventPile.popleft()
-                changes = np.where(newEvent == 1)[0]
+                changes = np.nonzero(newEvent)
                 history.append(changes[0])
                 for channel in changes:
                     self.countdown[channel] = self.COOLDOWN
@@ -32,13 +32,17 @@ class ActionLights:
                 if state > 0:
                     if state == 15:
                         LightController.pixelChange(channel, (255, 0, 0))
+                        LightController.pixelChange(channel + self.INPUT_CHANNELS, (255, 255, 255))
                     elif state == 10:
                         LightController.pixelChange(channel, (255, 100, 0))
                     elif state == 6:
                         LightController.pixelChange(channel, (150, 200, 0))
                     elif state == 1:
                         LightController.pixelOff(channel)
+                        LightController.pixelOff(channel + self.INPUT_CHANNELS)
+            print(f"History: {history}")
             if history[0] == history[1] & history[1] == history[2]:
                 print("Exiting game")
+                LightController.colorWipeFast((0, 0, 0), 10)
                 break
             self.countdown = decrement(self.countdown)
