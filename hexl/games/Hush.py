@@ -3,7 +3,7 @@ import collections
 from collections import deque
 import time
 
-class RandomWalker:
+class Hush:
     def __init__(self):
         self.colorful = False
         self.suits = 2

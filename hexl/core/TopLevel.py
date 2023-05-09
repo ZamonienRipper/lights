@@ -9,6 +9,10 @@ from hexl.games.ActionLights import ActionLights
 from hexl.games.Memory import Memory
 from hexl.games.HexClock import HexClock
 from hexl.games.DebugMode import DebugMode
+<<<<<<< HEAD
+=======
+from hexl.games.Hush import Hush
+>>>>>>> d4ef424df58e9c91e3c2d3892c42d6aa10504484
 from hexl.games.RandomWalker import RandomWalker
 from hexl.core.ThreadWithException import thread_with_exception
 import numpy as np
@@ -43,7 +47,7 @@ class Hexl():
         self.detection_thread = thread_with_exception(target=detectionThread, args=(self.dataFreq, self.detector, self.eventPile))
         
     def selectMode(self):
-        gameWheel = ((255, 255, 0), (0, 128, 128), (255, 0, 255), (0, 255, 0), (100, 100, 100), (100, 100, 100))
+        gameWheel = ((255, 0, 0), (0, 0, 255), (255, 255, 0), (0,128,255), (0, 255, 0))
         #gameWheel = ((255, 0, 0), (255, 0, 0),(255, 0, 0),(255, 0, 0),(255, 0, 0),(255, 0, 0))
         #gameWheel = ((0, 0, 255), (0, 0, 255),(0, 0, 255),(0, 0, 255),(0, 0, 255),(0, 0, 255)) 
         #gameWheel = ((0, 255, 0), (0, 255, 0), (0, 255, 0), (0, 255, 0), (0, 255, 0), (0, 255, 0))
@@ -74,7 +78,7 @@ class Hexl():
             self.detection_thread.start()
             
             while True:
-                
+
                 if self.noGameRunning:
                     nextGame = self.selectMode()
                     if nextGame == 0:
@@ -90,10 +94,10 @@ class Hexl():
                         self.game = RandomWalker()
                         print("Next game is 3: RandomWalker")
                     elif nextGame == 4:
-                        self.game = ActionLights()
-                        print("Next game is not yet created")
+                        self.game = Hush()
+                        print("Next game is 4: Hush")
                     elif nextGame == 5:
-                        self.game = HexClock()
+                        self.game = Hush()
                         print("Next game is not yet created")
                     if debugFlag:
                         self.game = DebugMode()
