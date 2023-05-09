@@ -9,10 +9,7 @@ from hexl.games.ActionLights import ActionLights
 from hexl.games.Memory import Memory
 from hexl.games.HexClock import HexClock
 from hexl.games.DebugMode import DebugMode
-<<<<<<< HEAD
-=======
 from hexl.games.Hush import Hush
->>>>>>> d4ef424df58e9c91e3c2d3892c42d6aa10504484
 from hexl.games.RandomWalker import RandomWalker
 from hexl.core.ThreadWithException import thread_with_exception
 import numpy as np
