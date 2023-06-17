@@ -44,7 +44,7 @@ class Hexl():
         self.detection_thread = thread_with_exception(target=detectionThread, args=(self.dataFreq, self.detector, self.eventPile))
         
     def selectMode(self):
-        gameWheel = ((255, 0, 0), (0, 0, 255), (255, 255, 0), (0,128,255), (0, 255, 0))
+        gameWheel = ((255, 0, 0), (0, 0, 255), (255,0,255), (255,128,0), (0, 255, 0), (0,0,0))
         #gameWheel = ((255, 0, 0), (255, 0, 0),(255, 0, 0),(255, 0, 0),(255, 0, 0),(255, 0, 0))
         #gameWheel = ((0, 0, 255), (0, 0, 255),(0, 0, 255),(0, 0, 255),(0, 0, 255),(0, 0, 255)) 
         #gameWheel = ((0, 255, 0), (0, 255, 0), (0, 255, 0), (0, 255, 0), (0, 255, 0), (0, 255, 0))

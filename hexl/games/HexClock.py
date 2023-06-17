@@ -8,7 +8,7 @@ class HexClock:
 
     def play(self, gameFreq, LightController, eventPile):
         minuteColor = (255,255,255)
-        hourColor = (0,0,255)
+        hourColor = (255,0,255)
         eventPile.clear()
 
         while True:
