@@ -1,6 +1,7 @@
 import numpy as np
 import collections
 from collections import deque
+import itertools
 import time
 
 class Hush:
@@ -15,6 +16,10 @@ class Hush:
         self.inner = deque([2,1,0,5,4,3], maxlen=6)
         self.randomization_times = [.5,.5,.4,.4,.3,.3,.2,.2,.1,.1,.1,.1,.1,.1,.1]
         #self.randomization_times = [.1,.1]
+        self.single_player = [(0,0,0),(0,0,0),(255,255,255)]
+        self.two_player = [(0,0,0),(255,255,0),(255,255,255)]
+        self.three_player = [(0,255,255),(255,255,0),(255,255,255)]
+        self.players = [self.single_player, self.two_player, self.three_player]
 
     def nxt(self, field):
         if self.inner.index(field) in [0,5]:
@@ -149,9 +154,39 @@ class Hush:
             LightController.pixelsChange(winners, [(0,0,0) for x in winners])
             time.sleep(.5)
 
+    def selectMode(self, LightController, eventPile):
+        one_player_elements = [6]
+        two_player_elements = [7, 1]
+        three_player_elements = [8, 2, 3]
+        player_directions = {0: 1, 1: 2, 2: 3}
+        player_elements = {1: [6,6,6], 2: [7,7,1], 3: [8,2,3]}
+        for mode, colors in enumerate([self.single_player, self.two_player, self.three_player]):
+            print(f'{player_elements[mode+1]=}')
+            print(f'{colors=}')
+            print(colors[0])
+            LightController.pixelsChange(player_elements[mode+1], colors)
+            
+        wait = 1
+        while wait:
+            if eventPile:
+                players = np.where(eventPile.popleft() == 1)[0][0]
+                eventPile.clear()
+                if players in player_directions.keys():
+                    LightController.offWipeFast()
+                    LightController.pixelChange(player_elements[players+1], [(255,255,255)])
+                    time.sleep(0.5) 
+                    self.players = self.players[players]
+                    break
+                else:
+                    continue
+                time.sleep(0.4)
+        
+        
     def play(self, gameFreq, LightController, eventPile):
+        self.selectMode(LightController, eventPile)
         self.randomize_grid(LightController)
         while self.points < 3:
+            
             (dir, clockwise) = self.getInput(gameFreq, LightController, eventPile)
             self.rotate_grid(dir, clockwise)
             self.update_light(LightController)
