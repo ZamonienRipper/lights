@@ -49,7 +49,7 @@ class Hush:
             time.sleep(delay)
         while self.checkGrid() is not None:
             self.rotate_grid(np.random.choice(self.inner),np.random.choice([True, False]))
-            time.sleet(0.1)
+            time.sleep(0.1)
         
 
     def rotate_grid(self, direction, clockwise):

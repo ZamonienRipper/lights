@@ -14,7 +14,6 @@ from hexl.games.RandomWalker import RandomWalker
 from hexl.core.ThreadWithException import thread_with_exception
 import numpy as np
 debugFlag = 0
-simulatorFlag = 0
 
 def detectionThread(dataFreq, detector, eventPile):
     global connected
@@ -39,13 +38,8 @@ class Hexl():
         self.gameFreq = 0.3
         self.eventPile = deque([], maxlen=5)
         self.noGameRunning = True
-        if simulatorFlag:
-            from hexl.core.LightSimulator import LightSimulator
-            self.detector = StepUpDetector()
-            self.lights = LightSimulator()
-        else:
-            self.lights = LightController()
-            self.detector = StepUpDetector()
+        self.lights = LightController()
+        self.detector = StepUpDetector()
 
         self.detection_thread = thread_with_exception(target=detectionThread, args=(self.dataFreq, self.detector, self.eventPile))
         
