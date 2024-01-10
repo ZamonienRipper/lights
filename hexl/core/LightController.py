@@ -34,9 +34,9 @@ class LightController(LightControllerParent):
     def __init__(self):
         self.strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
         self.strip.begin()
+        self.LED_INDEXES = LED_INDEXES
         self.bandsDict = {'outer': LED_INDEXES_OUTER, 'inner': LED_INDEXES_INNER}
         self.pixelsDict = {'outer': self.pixelList('outer'), 'inner': self.pixelList('inner')}
-        self.LED_INDEXES = LED_INDEXES
         print(f"bandsDict: {self.bandsDict}")
         print(f"pixelsDict: {self.pixelsDict}")
 
