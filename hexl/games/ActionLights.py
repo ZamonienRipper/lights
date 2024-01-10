@@ -40,7 +40,7 @@ class ActionLights:
                     elif state == 1:
                         LightController.pixelOff(channel)
                         LightController.pixelOff(channel + self.INPUT_CHANNELS)
-            print(f"History: {history}")
+            #print(f"History: {history}")
             if history[0] == history[1] & history[1] == history[2]:
                 print("Exiting game")
                 LightController.colorWipeFast((0, 0, 0), 10)
