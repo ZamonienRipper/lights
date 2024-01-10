@@ -3,6 +3,7 @@ import collections
 from collections import deque
 import itertools
 import time
+import queue
 
 class Hush:
     def __init__(self):
@@ -155,31 +156,30 @@ class Hush:
             time.sleep(.5)
 
     def selectMode(self, LightController, eventPile):
-        one_player_elements = [6]
-        two_player_elements = [7, 1]
-        three_player_elements = [8, 2, 3]
-        player_directions = {0: 1, 1: 2, 2: 3}
-        player_elements = {1: [6,6,6], 2: [7,7,1], 3: [8,2,3]}
-        for mode, colors in enumerate([self.single_player, self.two_player, self.three_player]):
-            print(f'{player_elements[mode+1]=}')
-            print(f'{colors=}')
-            print(colors[0])
-            LightController.pixelsChange(player_elements[mode+1], colors)
-            
+        player_selectors = {1:6, 2:7, 3:8}
+        
+        lights_sequence = deque([6, 0, 0, 7, 7, 0, 0, 8, 8, 8, 0, ])
+        
         wait = 1
         while wait:
+            if lights_sequence[0] != 0:
+                LightController.pixelChange(lights_sequence[0], (255,255,255))
+            time.sleep(0.25)
+            LightController.pixelChange(lights_sequence[0], (0,0,0))
+            time.sleep(0.2)
+            lights_sequence.rotate(-1)
             if eventPile:
                 players = np.where(eventPile.popleft() == 1)[0][0]
                 eventPile.clear()
-                if players in player_directions.keys():
+                if players in player_selectors.keys():
                     LightController.offWipeFast()
                     LightController.pixelChange(player_elements[players+1], [(255,255,255)])
                     time.sleep(0.5) 
-                    self.players = self.players[players]
+                    self.players = self.players[players] 
                     break
                 else:
                     continue
-                time.sleep(0.4)
+
         
         
     def play(self, gameFreq, LightController, eventPile):
