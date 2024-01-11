@@ -158,10 +158,9 @@ class Hush:
     def selectMode(self, LightController, eventPile):
         player_selectors = {1:6, 2:7, 3:8}
         
-        lights_sequence = deque([6, 0, 0, 7, 7, 0, 0, 8, 8, 8, 0, ])
+        lights_sequence = deque([6, 0, 7, 7, 0, 8, 8, 8, 0, ])
         
-        wait = 1
-        while wait:
+        while 1:
             if lights_sequence[0] != 0:
                 LightController.pixelChange(lights_sequence[0], (255,255,255))
             time.sleep(0.25)
@@ -172,9 +171,10 @@ class Hush:
                 players = np.where(eventPile.popleft() == 1)[0][0]
                 eventPile.clear()
                 if players in player_selectors.keys():
-                    LightController.offWipeFast()
-                    LightController.pixelChange(player_elements[players+1], [(255,255,255)])
-                    time.sleep(0.5) 
+                    for i in range(players):
+                        LightController.pixelChange(12, [(255,255,255)])
+                        time.sleep(0.3) 
+                        LightController.pixelChange(12, [(0,0,0)])
                     self.players = self.players[players] 
                     break
                 else:
