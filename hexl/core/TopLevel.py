@@ -35,7 +35,7 @@ class Hexl():
         np.set_printoptions(linewidth=200)
             
         self.dataFreq = 0.03
-        self.gameFreq = 0.3
+        self.gameFreq = 0.05
         self.eventPile = deque([], maxlen=5)
         self.noGameRunning = True
         self.lights = LightController()
@@ -52,22 +52,22 @@ class Hexl():
         self.lights.pixelsChange([6, 7, 8, 9, 10, 11], gameWheel)
         while True:
             if self.eventPile:
-                print(f'eventPile: {self.eventPile}')
+                #print(f'eventPile: {self.eventPile}')
                 nextGame = np.where(self.eventPile.popleft() == 1)[0][0]
                 self.lights.pixelOff(nextGame)
                 time.sleep(0.7)
                 self.lights.pixelChange(nextGame, gameWheel[nextGame])
-                time.sleep(0.7)
+                time.sleep(0.2)
                 self.lights.pixelOff(nextGame)
-                time.sleep(0.7)
+                time.sleep(0.2)
                 self.lights.pixelChange(nextGame, gameWheel[nextGame])
-                time.sleep(0.7)
+                time.sleep(0.2)
                 self.lights.pixelOff(nextGame)
                 print(f"New mode: {nextGame} selected")
                 return nextGame
             else:
                 time.sleep(self.gameFreq)
-            print(self.eventPile)
+            #print(self.eventPile)
 
     def run(self):
         try:

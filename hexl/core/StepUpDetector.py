@@ -32,8 +32,8 @@ class StepUpDetector:
         #print(f"flags: {flags}")
         if flags.sum():
             eventPile.append(flags)
-            print(f'len(eventPile): {len(eventPile)}')
-            print(f'eventPile: {eventPile}')
+            #print(f'len(eventPile): {len(eventPile)}')
+            #print(f'eventPile: {eventPile}')
             #print(eventPile)
             #print(f"EvenPile inside updateEvents: {eventPile}")
             changes = np.where(flags == 1)[0]

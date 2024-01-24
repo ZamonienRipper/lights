@@ -81,8 +81,9 @@ class LightControllerParent:
             
     def offWipeFast(self, wait_ms=150):
         """Turn off display a pixel at a time"""
+        print("WIPING OFF ALL LEDS")
         for i, indeces in enumerate(self.LED_INDEXES):
-            print(f"Turing off pixel {i}, which contains leds {indeces}")
+            #print(f"Turing off pixel {i}, which contains leds {indeces}")
             self.pixelOff(i)
             time.sleep(wait_ms / 1000.0)
 
