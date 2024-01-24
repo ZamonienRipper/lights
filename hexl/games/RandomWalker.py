@@ -52,8 +52,8 @@ class RandomWalker:
 
             self.iterate()
             LightController.pixelsChange(self.walker, self.tail)
-            time.sleep(1)
+            time.sleep(.7)
 
             if eventPile:
-                LightController.colorWipe((0, 0, 0))
+                LightController.colorWipeFast((0, 0, 0))
                 break

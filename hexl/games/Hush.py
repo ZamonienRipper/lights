@@ -14,7 +14,7 @@ class Hush:
         self.gaming = True
         self.fields = [0,1,2,3,4,5,6,7,8,9,10,11,12]
         self.grid = {12:0, 0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0}
-        self.colors = [(0,0,0), (0,255,0), (0,0,255), (255,0,255)]
+        self.colors = [(0,0,0), (255,0,255), (0,0,255), (255,128,0)]
         self.inner = deque([2,1,0,5,4,3], maxlen=6)
         self.randomization_times = [.5,.5,.4,.4,.3,.3,.2,.2,.1,.1,.1,.1,.1,.1,.1,.1,.1,.1,.1,.3,.5]
         #self.randomization_times = [.1,.1]
@@ -231,7 +231,6 @@ class Hush:
         self.selectMode(LightController, eventPile)
         self.randomize_grid(LightController)
         while sum(self.score) < self.game_points:
-            
             (dir, clockwise) = self.getInput(gameFreq, LightController, eventPile)
             self.rotate_grid(dir, clockwise)
             self.update_light(LightController)
@@ -243,7 +242,6 @@ class Hush:
                 self.removeWinner(winner, LightController)                   
             self.update_light(LightController)
         LightController.offWipeFast(50)
-        self.score = [1, 0, 1]
         if self.players > 1:
             self.showScore(gameFreq, LightController, eventPile)
         print('GAME OVER')

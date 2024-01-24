@@ -7,7 +7,7 @@ class HexClock:
         self.indexMap = [[0], [0, 1], [1], [1, 2], [2], [2, 3], [3], [3, 4], [4], [4, 5], [5], [5, 0]]
 
     def play(self, gameFreq, LightController, eventPile):
-        minuteColor = (255,255,255)
+        minutColor = (255,255,255)
         hourColor = (255,0,255)
         eventPile.clear()
 
@@ -21,7 +21,7 @@ class HexClock:
             minuteLEDs = self.indexMap[nowMinute]
 
             LightController.bandChange('inner', hourLEDs, [hourColor]*len(hourLEDs))
-            LightController.bandChange('outer', minuteLEDs, [minuteColor]*len(minuteLEDs))
+            LightController.bandChange('outer', minuteLEDs, [minutColor]*len(minuteLEDs))
 
             time.sleep(5)
             

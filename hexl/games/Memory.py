@@ -8,8 +8,8 @@ class Memory:
         self.TIMEOUT = 5
         self.LIVES = 3
         self.LEVEL = 1
-        self.WIN = 10
-        self.VAL_ON = 1.2
+        self.WIN = 11
+        self.VAL_ON = 1
         self.VAL_OFF = 0.5
         self.LINGER = 0.25
         self.WAIT = 0.75
@@ -92,11 +92,11 @@ class Memory:
                 time.sleep(self.WAIT)
                 print(f"Ready for input. Repeat the pattern")
                 self.readInput(gameFreq, LightController, eventPile)
-        if self.LEVEL == self.WIN:
-            print("You reached level 10!!")
-            LightController.celebrate()
-        else:
-            print("Game over")
-            LightController.death()
+            if self.LEVEL == self.WIN:
+                print("You completed level 10!!")
+                LightController.celebrate()
+                break
+        print("Game over")
+        LightController.death()
 
 
