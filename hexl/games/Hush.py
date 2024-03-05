@@ -87,7 +87,6 @@ class Hush:
         LightController.pixelsChange(pixels, colors)
 
     def getInput(self, gameFreq, LightController, eventPile):
-        colorWheel = ((0,255,0), (127,255,0), (255,255,0), (255,127,0), (255,0,0))
         player_indicator = self.player_indicators[self.player_seq[0]-1].copy()
         eventPile.clear()
         wait = 1
@@ -236,7 +235,6 @@ class Hush:
             self.update_light(LightController)
             self.player_seq.rotate(-1)
             winner = self.checkGrid()
-            print(winner)
             if winner != None:
                 self.score[self.player_seq[0]-1] += 1
                 self.removeWinner(winner, LightController)                   
