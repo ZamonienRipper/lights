@@ -25,6 +25,9 @@ class Simulator():
 		tmp[i-1] = 1
 		print(f'clicked button {i-1}')
 		self.eventPile.append(tmp)
+  
+  
+
 			
 	def process_color_changes(self):
 		field_index, rgb = self.color_change_queue.get()
@@ -35,6 +38,8 @@ class Simulator():
 		
 		global connected
 		connected = True
+  
+		self.games = {'ActionLights': ActionLights(), 'Memory': Memory(), 'HexClock': HexClock(), 'DebugMode': DebugMode(), 'Hush': Hush(), 'RandomWalker': RandomWalker()}
    
 		# Game variables
 		self.stop_threads = Event()
@@ -42,16 +47,18 @@ class Simulator():
 		self.eventPile = deque([], maxlen=5)
 		self.color_change_queue = queue.Queue()
 		self.lights = LightSimulator(self.color_change_queue)
+		self.next_game = 'Hush'
   
 		# GUI setup
 		self.window = tk.Tk()
 		self.window.title("Color Window")
-		self.window.geometry(f"{canvas_size+100}x{canvas_size+100}")
+		self.window.geometry(f"{canvas_size}x{canvas_size}")
 		self.canvas_size = canvas_size
 		
 		self.canvas = tk.Canvas(self.window, width=canvas_size, height=canvas_size, bg="white")
 		self.canvas.pack()
 
+		# Create circular color fields in correposponding positions as the physical device
 		self.color_fields = []
 		for i in range(13):
 			x = canvas_center + 0.17 * canvas_size * math.cos(2 * math.pi * i / 6)
@@ -64,11 +71,12 @@ class Simulator():
 				radius = 30
 			else:
 				x, y, radius = canvas_center, canvas_center, 35
-			field = self.canvas.create_oval(x-radius, y-radius, x+radius, y+radius, fill="white")
+			field = self.canvas.create_oval(x-radius, y-radius, x+radius, y+radius, fill="black")
 			self.canvas.create_text(x, y, text=i, fill='white')
 			self.canvas.pack()
 			self.color_fields.append(field)
 
+		# Create buttons in the positions of the physical device
 		self.buttons = []
 		for i in range(1,7): #strange indexing required to match the physical device where LED 0 is not aligned with button 0
 			x = canvas_center + 0.45 * canvas_size * math.cos(2 * math.pi * (i-1) / 6)
@@ -77,6 +85,32 @@ class Simulator():
 			self.canvas.create_window(x, y, window=button)  # Place the button on the canvas
 			self.buttons.append(button)
 		
+		# Add controls for selecting and restarting the game
+		self.game_selection = tk.StringVar(self.window)
+		self.game_selection.set(list(self.games.keys())[4])  # Set the default selection
+
+		def update_game_selection(*args):
+			self.next_game = self.game_selection.get()
+
+		self.game_selection.trace_add('write', update_game_selection)
+
+		game_list = tk.OptionMenu(self.window, self.game_selection, *self.games.keys())
+		game_list.config(width=12)  # Set the width of the option menu button
+		self.canvas.create_window(self.canvas_size-50, 10, window=game_list)
+		self.buttons.append(game_list)
+	
+		def restart_game():
+			self.game_thread.raise_exception()
+			for led in self.lights.LED_INDEXES:
+				print(led)
+				self.color_change_queue.put((led[0], (0,0,0)))
+			self.start_game()
+
+		restart_button = tk.Button(self.window, text="Next Game", command=restart_game)
+		restart_button.config(width=15)  # Set the width of the restart button
+		self.canvas.create_window(self.canvas_size-50, 40, window=restart_button)
+		self.buttons.append(restart_button)
+  
 		# Start a thread that checks the queue and performs color changes
 		def colorUpdateThread():
 			global connected
@@ -86,8 +120,8 @@ class Simulator():
 		self.colorUpdateThread = thread_with_exception(target=colorUpdateThread)
 		self.colorUpdateThread.setDaemon(True)
 		self.colorUpdateThread.start()
-		
-	def run(self):
+  
+	def start_game(self):
 		
 		def gameThread(game, gameFreq, lights, eventPile):
 			global connected
@@ -106,14 +140,16 @@ class Simulator():
 				print('closed gameThread')
 				self.window.destroy()
 
-			self.game = Hush()
+			self.game = self.games[self.next_game]
+   
 			self.game_thread = thread_with_exception(
 			target=gameThread, args=(
 				self.game, self.gameFreq, self.lights, self.eventPile))
 			self.game_thread.setDaemon(True)
 
 			q_button = tk.Button(self.window, text="Quit", command=stop_game)
-			self.canvas.create_window(self.canvas_size/2, self.canvas_size+10, window=q_button)
+			q_button.config(width=15)
+			self.canvas.create_window(50, 10, window=q_button)
 			self.buttons.append(q_button)
 
 			self.game_thread.start()
@@ -130,4 +166,5 @@ class Simulator():
 				self.game_thread.raise_exception()
 				print("Everything is clean and wiped now. Goodbye")
 
-		
+	def run(self):
+		self.start_game()
