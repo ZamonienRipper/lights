@@ -105,8 +105,8 @@ class Simulator:
         self.game_selection = tk.StringVar(self.window)
         self.game_selection.set(list(self.games.keys())[4])  # Set the default selection
 
-        def update_game_selection():
-            self.next_game = self.game_selection.get()
+        def update_game_selection(self, event, next_game):
+            self.next_game = next_game
 
         self.game_selection.trace_add("write", update_game_selection)
 
